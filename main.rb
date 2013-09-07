@@ -3,7 +3,8 @@ class Sokoban
 
 	def initialize(map)
 		@map = map
-		@man = man_position(map)
+		@x = man_position(map)[0]
+		@y = man_position(map)[1]
 	end	
 
 	def man_position(map)
@@ -17,19 +18,23 @@ class Sokoban
 		end 
 	end	
    
-   def man
-   		@man
+   def x
+   		@x
    end
 
    #mover @ de acordo com o movimento
    def move
+   	render()
    end
 
    #imprimir mapa
    def render
+   	puts @map
    end
    
 end	
+
+
 f = open("/home/lucas/level1.txt")
 array = []
 f.each_line {	
@@ -37,5 +42,6 @@ f.each_line {
   }
 f.close
 sokoban = Sokoban.new(array)
-puts "#{sokoban.man}"
+sokoban.move
+
 
