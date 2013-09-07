@@ -1,11 +1,13 @@
 
 class Game	
-	attr_reader :map
+	@map
+	@coordinates
+	
 
 	def initialize(map)
 		@map = map
-		@x = man_position(map)[0]
-		@y = man_position(map)[1]
+		@coordinates = man_position(map)
+		
 	end	
 
 
@@ -13,43 +15,67 @@ class Game
 		i=0
 		map.each do |linhas|
 			if !linhas.index('@').nil?
-				coordinates = [linhas.index('@'),i]
+				coordinates = [i,linhas.index('@')]
 				return coordinates
 			end	
 			i += 1
 		end 
 	end	
    
-   def x
-   		@x
-   end
 
    #mover @ de acordo com o movimento
    def move(direction)
    	case direction
    	when 'a'
-   		puts "left"
+   		clear(@coordinates[0],@coordinates[1]-1)
    	when 'd'
-   		puts "right"
+   		clear(@coordinates[0],@coordinates[1]+1)
    	when 's'
-   		puts "down"
+   		clear(@coordinates[0]+1,@coordinates[1])
    	when 'w'
-   		puts "up"
+   		clear(@coordinates[0]-1,@coordinates[1])
    	end
 
      	render()
    end
 
+   def clear(x,y)
+   	if @map[x][y] == '#'
+   		return false
+   	end
+   	if @map[x][y] == ' '
+   		return move_space(x,y)
+   	end
+   	if @map[x][y] == 'o'
+   		return move_box
+   	end
+   if @map[x][y] == '.'
+   		return move_storage
+   	end
+      	
+   end
+
    #imprimir mapa
    def render
+   	puts "\n"
    	puts @map
    end
 
-   def move_man
+   def move_space(x,y)   		
+   	  @map[x][y] = '@'
+   	  @map[@coordinates[0]][@coordinates[1]] = ' '
+   	  @coordinates[0] = x
+   	  @coordinates[1] = y
    end
    
    def move_box
+   	return true
    end
+
+   def move_storage
+   	return false
+   end
+
 
 
 end	
