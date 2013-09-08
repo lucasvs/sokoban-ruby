@@ -22,25 +22,46 @@ class Game
 			i += 1
 		end 
 	end	
+
+	def win?(map)
+		found = true
+		map.each do |linhas|
+			if !linhas.index('.').nil?
+				found = false
+			end				
+		end
+     return found
+	end	
    
 
    #mover @ de acordo com o movimento
-   def move(direction)
+   def position(direction)
+   	if !win?(@map)
    	case direction
    	when 'a'
-   		clear(@coordinates[0],@coordinates[1],'left')
+   		move(@coordinates[0],@coordinates[1],'left')
    	when 'd'
-   		clear(@coordinates[0],@coordinates[1],'right')
+   		move(@coordinates[0],@coordinates[1],'right')
    	when 's'
-   		clear(@coordinates[0],@coordinates[1],'down')
+   		move(@coordinates[0],@coordinates[1],'down')
    	when 'w'
-   		clear(@coordinates[0],@coordinates[1],'up')
+   		move(@coordinates[0],@coordinates[1],'up')
    	end
+   	render()
+   elsif 
+   		puts "\n"
+     	puts "++++++++ WIN ++++++++" 
+   end
+   	
 
-     	render()
+     	
+     	if win?(@map)
+     		puts "\n"
+     		puts "++++++++ WIN ++++++++"     	
+     	end
    end
 
-   def clear(x,y,pos)
+   def move(x,y,pos)
       
    	case pos
    	when 'left'
@@ -65,7 +86,7 @@ class Game
    		return move_space(x,y,pos)
    	end
    	if @map[one][two] == 'o'
-   		return move_box(one,two,pos)
+   		return move_box(one,two,pos,@map[x][y])
    	end
    if @map[one][two] == '.'
    		return move_space(x,y,pos)
@@ -135,6 +156,8 @@ class Game
    	  return true
    end 
 
+
+
     if  @map[x][y] == '+' && @map[one][two] == '.' 
    	  @map[one][two] = '+'   	  
    	  @map[x][y] = '.'   	   	  
@@ -143,11 +166,7 @@ class Game
    	  return true
    end 
 
-    if  @map[x][y] == '*' && @map[one][two] == ' ' 
-   	  @map[one][two] = 'o'   	  
-   	  @map[x][y] = '.'
-   	  return true
-   end 
+
 
     if  @map[x][y] == '*' && @map[one][two] == '.' 
    	  @map[one][two] = '*'   	  
@@ -165,19 +184,47 @@ class Game
 
    end
    
-   def move_box(x,y,pos)
-   	  if clear(x,y,pos)
-   	  	clear(@coordinates[0],@coordinates[1],pos)
+   def move_box(x,y,pos,type)   
+
+      	case pos
+   	when 'left'
+   		two = y - 1
+   		one = x
+   	when 'right'
+   		two = y + 1
+   		one = x
+   	when 'down'
+   		one = x + 1
+   		two = y
+   	when 'up'
+   		one = x - 1
+   		two = y
+   	end 	
+   	if(type == '@' && (@map[one][two] == ' ' || @map[one][two] == '.'))
+   	  if move(x,y,pos)
+   	  	move(@coordinates[0],@coordinates[1],pos)
+   	  	return true
+   	  end
+   	end
+   end
+
+      def move_storage(x,y,pos)      	
+   	  if move(x,y,pos)
+   	  	move(@coordinates[0],@coordinates[1],pos)
    	  	return true
    	  end
    end
 
-      def move_storage(x,y,pos)
-   	  if clear(x,y,pos)
-   	  	clear(@coordinates[0],@coordinates[1],pos)
-   	  	return true
-   	  end
-   end
+   	def man_position(map)
+		i=0
+		map.each do |linhas|
+			if !linhas.index('@').nil?
+				coordinates = [i,linhas.index('@')]
+				return coordinates
+			end	
+			i += 1
+		end 
+	end	
 
 end	
 
@@ -193,16 +240,19 @@ sokoban = Game.new(array)
 
 
 VALID_DIRECTION = %w( w s a d )
-puts 'Press W,A,S,D to move and "q" to quit'
-sokoban.move(' ')
+puts 'Press W,A,S,D to move and "r" to restart, "q" to quit'
+sokoban.position(' ')
 loop do  
   system("stty raw -echo")
   char = STDIN.read_nonblock(1) rescue nil
   system("stty -raw echo")
   break if /q/i =~ char
+  if char == 'r'
+   sokoban = Game.new(array)
+  end
 case char
 when *VALID_DIRECTION
-  sokoban.move(char)
+  sokoban.position(char)
 else  
 end
   #sleep(1)
