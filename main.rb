@@ -8,6 +8,7 @@ class Game
 		@map = map
 		@coordinates = man_position(map)
 		
+		
 	end	
 
 
@@ -67,7 +68,10 @@ class Game
    		return move_box(one,two,pos)
    	end
    if @map[one][two] == '.'
-   		return move_storage
+   		return move_space(x,y,pos)
+   	end
+   	if @map[one][two] == '*'
+   		return move_storage(one,two,pos)
    	end
       	
    end
@@ -94,19 +98,70 @@ class Game
    		two = y
    	end 
 
-   if  @map[x][y] == '@'
-   	  @map[one][two] = '@'
-   	  @map[@coordinates[0]][@coordinates[1]] = ' '
+   if  @map[x][y] == '@' && @map[one][two] == ' ' 
+   	  @map[one][two] = '@'   	  
+   	  @map[x][y] = ' '   	   	  
    	  @coordinates[0] = one
    	  @coordinates[1] = two
    	  return true
    end 
 
-     if  @map[x][y] == 'o' 
+     if  @map[x][y] == 'o' && @map[one][two] == ' '
    	  @map[one][two] = 'o'
    	  @map[x][y] = ' '
    	  return true
-   end		
+   end	
+
+      if  @map[x][y] == 'o' && @map[one][two] == '.'
+   	  @map[one][two] = '*'
+   	  @map[x][y] = ' '
+   	  return true
+   end	
+
+   if  @map[x][y] == '@' && @map[one][two] == '.'
+   	  @map[one][two] = '+'
+   	  @map[x][y] = ' '
+   	  @box = true
+   	  @coordinates[0] = one
+   	  @coordinates[1] = two
+   	  return true
+   end	
+
+      if  @map[x][y] == '+' && @map[one][two] == ' ' 
+   	  @map[one][two] = '@'   	  
+   	  @map[x][y] = '.'   	   	  
+   	  @coordinates[0] = one
+   	  @coordinates[1] = two
+   	  return true
+   end 
+
+    if  @map[x][y] == '+' && @map[one][two] == '.' 
+   	  @map[one][two] = '+'   	  
+   	  @map[x][y] = '.'   	   	  
+   	  @coordinates[0] = one
+   	  @coordinates[1] = two
+   	  return true
+   end 
+
+    if  @map[x][y] == '*' && @map[one][two] == ' ' 
+   	  @map[one][two] = 'o'   	  
+   	  @map[x][y] = '.'
+   	  return true
+   end 
+
+    if  @map[x][y] == '*' && @map[one][two] == '.' 
+   	  @map[one][two] = '*'   	  
+   	  @map[x][y] = '.'
+   	  return true
+   end 
+
+    if  @map[x][y] == '*' && @map[one][two] == 'o' 
+   	  return false
+   end 
+
+    if  @map[x][y] == '*' && @map[one][two] == '*' 
+   	  return false
+   end 
 
    end
    
@@ -117,11 +172,12 @@ class Game
    	  end
    end
 
-   def move_storage
-   	return false
+      def move_storage(x,y,pos)
+   	  if clear(x,y,pos)
+   	  	clear(@coordinates[0],@coordinates[1],pos)
+   	  	return true
+   	  end
    end
-
-
 
 end	
 
