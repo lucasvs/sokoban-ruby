@@ -230,7 +230,7 @@ end
 
 
 
-f = open("/home/lucas/level1.txt")
+f = open("level1.txt")
 array = []
 f.each_line {	
  	|line| array << line
